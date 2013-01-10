@@ -5,6 +5,7 @@ import static br.com.yaw.jfx.util.ApplicationProperties.getDesenvolvidoPor;
 import static br.com.yaw.jfx.util.ApplicationProperties.getSite;
 import static br.com.yaw.jfx.util.ApplicationProperties.getTitulo;
 import static br.com.yaw.jfx.util.ApplicationProperties.getVersao;
+import static br.com.yaw.jfx.util.ApplicationProperties.getURLLogo;
 import javafx.application.Platform;
 
 import javafx.scene.Group;
@@ -87,8 +88,7 @@ public class SobreView extends Stage {
     }
     
     private VBox getImage() {
-        Image image = new Image("logo_yaw.png");
-        
+        Image image = new Image(getURLLogo());
         VBox box = new VBox();
         box.getChildren().add(new ImageView(image));
         box.getStyleClass().add("logoBox");
