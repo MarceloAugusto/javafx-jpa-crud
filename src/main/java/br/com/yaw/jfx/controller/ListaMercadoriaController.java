@@ -13,6 +13,7 @@ import br.com.yaw.jfx.ui.ListaMercadoriasView;
 import br.com.yaw.jfx.ui.SobreView;
 import br.com.yaw.jfx.util.JPAUtil;
 import java.util.List;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -104,7 +105,7 @@ public class ListaMercadoriaController extends PersistenceController {
             public void handleEvent(BuscarMercadoriaEvent event) {
                 List<Mercadoria> list = event.getTarget();
                 if (list != null) {
-                    view.refreshTable(event.getTarget());
+                    refreshTable(event.getTarget());
                 }
             }
         });
@@ -119,7 +120,23 @@ public class ListaMercadoriaController extends PersistenceController {
     }
     
     private void refreshTable() {
-        MercadoriaDAO dao = new MercadoriaDAOJPA(getPersistenceContext());
-        view.refreshTable(dao.getAll());
+        refreshTable(null);
+    }
+    
+    private void refreshTable(List<Mercadoria> list) {
+        view.addTransition();
+        if (list != null) {
+            view.refreshTable(list);
+            return;
+        }
+        
+        Platform.runLater(new Runnable() {
+
+            @Override
+            public void run() {
+                MercadoriaDAO dao = new MercadoriaDAOJPA(getPersistenceContext());
+                view.refreshTable(dao.getAll());
+            }
+        });
     }
 }

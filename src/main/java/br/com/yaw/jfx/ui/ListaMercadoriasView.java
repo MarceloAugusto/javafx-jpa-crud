@@ -3,6 +3,8 @@ package br.com.yaw.jfx.ui;
 import br.com.yaw.jfx.model.Mercadoria;
 import java.util.List;
 import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -65,12 +67,20 @@ public class ListaMercadoriasView {
         bRefreshLista.setId("atualizarMercadorias");
     }
     
-    private void addTransition() {
-        FadeTransition ft = new FadeTransition(Duration.millis(3000), tabela);
-        ft.setFromValue(0.1);
+    public void addTransition() {
+        disableButtonBar(true);
+        FadeTransition ft = new FadeTransition(Duration.millis(2000), tabela);
+        ft.setFromValue(0.2);
         ft.setToValue(1);
         ft.setAutoReverse(true);
         ft.play();
+        
+        ft.setOnFinished(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent t) {
+                disableButtonBar(false);
+            }
+        });
     }
     
     private HBox getButtonsBox() {
@@ -113,8 +123,12 @@ public class ListaMercadoriasView {
     }
     
     public void refreshTable(List<Mercadoria> mercadorias) {
-        tabela.reload(mercadorias);
-        addTransition();
+        tabela.reload(mercadorias);        
     }
 
+    private void disableButtonBar(boolean disable) {
+        bNewMercadoria.setDisable(disable);
+        bFindMercadoria.setDisable(disable);
+        bRefreshLista.setDisable(disable);
+    }
 }

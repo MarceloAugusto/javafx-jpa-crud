@@ -1,6 +1,8 @@
 package br.com.yaw.jfx.controller;
 
 import br.com.yaw.jfx.action.AbstractAction;
+import br.com.yaw.jfx.action.BooleanExpression;
+import br.com.yaw.jfx.action.ConditionalAction;
 import br.com.yaw.jfx.dao.MercadoriaDAO;
 import br.com.yaw.jfx.dao.MercadoriaDAOJPA;
 import br.com.yaw.jfx.event.BuscarMercadoriaEvent;
@@ -39,31 +41,40 @@ public class BuscarMercadoriaController extends PersistenceController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        BuscarMercadoriaController.this.view.hide();
+                        view.hide();
                     }
                 });
             }
         });
         
-        registerAction(view.getBuscarButton(), new AbstractAction() {
-            private List<Mercadoria> list;
+        registerAction(view.getBuscarButton(), ConditionalAction.build()
+                .addConditional(new BooleanExpression() {
+                    @Override
+                    public boolean conditional() {
+                        return view.getText().length() > 0;
+                    }
+                })
+                .addAction(new AbstractAction() {
+                    private List<Mercadoria> list;
 
-            @Override
-            protected void action() {
-                if (view.getText().length() > 0) {
-                    MercadoriaDAO dao = new MercadoriaDAOJPA(getPersistenceContext());
-                    list = dao.getMercadoriasByNome(view.getText());
-                    view.hide();
-                }
-            }
-            
-            @Override
-            public void posAction() {
-                cleanUp();
-                fireEvent(new BuscarMercadoriaEvent(list));
-                list = null;
-            }
-        });
+                    @Override
+                    protected void action() {
+                        MercadoriaDAO dao = new MercadoriaDAOJPA(getPersistenceContext());
+                        list = dao.getMercadoriasByNome(view.getText());
+                    }
+
+                    @Override
+                    public void posAction() {
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                view.hide();
+                            }
+                        });
+                        fireEvent(new BuscarMercadoriaEvent(list));
+                        list = null;
+                    }
+                }));
     }
     
     public void show() {

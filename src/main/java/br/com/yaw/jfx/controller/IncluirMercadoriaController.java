@@ -46,7 +46,7 @@ public class IncluirMercadoriaController extends PersistenceController {
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        IncluirMercadoriaController.this.view.hide();
+                        view.hide();
                     }
                 });
             }
@@ -82,7 +82,12 @@ public class IncluirMercadoriaController extends PersistenceController {
 
                                 @Override
                                 protected void posAction() {
-                                    view.hide();
+                                    Platform.runLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            view.hide();
+                                        }
+                                    });
                                     fireEvent(new IncluirMercadoriaEvent(m));
                                 }
                             })));
